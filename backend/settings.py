@@ -21,7 +21,8 @@ DEBUG = os.environ.get("DEBUG", "False") == "True"
 
 ALLOWED_HOSTS = ["*"]
 CSRF_TRUSTED_ORIGINS = [
-    "https://bike-rental-backend-production.up.railway.app",
+    "https://bike-rental-backend.up.railway.app",
+    "https://bike-rental-frontend-nine.vercel.app",
 ]
 
 # ==============================
