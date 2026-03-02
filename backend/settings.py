@@ -15,8 +15,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY SETTINGS
 # ==============================
 
-SECRET_KEY = os.environ.get("SECRET_KEY")
+# SECRET_KEY = os.environ.get("SECRET_KEY")
+import os
 
+SECRET_KEY = os.getenv(
+    "SECRET_KEY",
+    "local-dev-secret-key-123456789012345678901234567890"
+)
 DEBUG = os.environ.get("DEBUG", "False") == "True"
 
 ALLOWED_HOSTS = ["*"]
