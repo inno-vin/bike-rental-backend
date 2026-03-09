@@ -17,8 +17,7 @@ class Bike(models.Model):
     price_per_day = models.DecimalField(max_digits=8, decimal_places=2)
 
     location = models.CharField(max_length=255)
-    available = models.BooleanField(default=True)
-    # is_available = models.BooleanField(default=True)
+    available = models.BooleanField(default=True, null=False)    # is_available = models.BooleanField(default=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
