@@ -4,10 +4,25 @@ from .models import Bike
 from .serializers import BikeSerializer
 from accounts.permissions import IsOwnerUser
 
-
 class BikeListAPIView(ListAPIView):
-    queryset = Bike.objects.all()
     serializer_class = BikeSerializer
+
+    def get_queryset(self):
+        start_date = self.request.query_params.get("start_date")
+        end_date = self.request.query_params.get("end_date")
+
+        # if no dates selected return empty list
+        if not start_date or not end_date:
+            return []
+
+        bikes = Bike.objects.all()
+        available_bikes = []
+
+        for bike in bikes:
+            if bike.is_available_for_dates(start_date, end_date):
+                available_bikes.append(bike)
+
+        return available_bikes
 
 
 class BikeCreateAPIView(CreateAPIView):
