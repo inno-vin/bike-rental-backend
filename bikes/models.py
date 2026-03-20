@@ -17,7 +17,9 @@ class Bike(models.Model):
     price_per_day = models.DecimalField(max_digits=8, decimal_places=2)
 
     location = models.CharField(max_length=255)
-    available = models.BooleanField(default=True, null=False)    # is_available = models.BooleanField(default=True)
+    available = models.BooleanField(default=True, null=False)
+    available_from = models.DateField(null=True, blank=True)
+    available_until = models.DateField(null=True, blank=True)    # is_available = models.BooleanField(default=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -25,10 +27,26 @@ class Bike(models.Model):
     def __str__(self):
         return self.title
     
+    # def is_available_for_dates(self, start_date, end_date):
+    #     overlapping_bookings = self.bookings.filter(
+    #         status__in=['pending', 'confirmed'],
+    #         start_date__lte=end_date,
+    #         end_date__gte=start_date,
+    #     )
+    #     return not overlapping_bookings.exists()
     def is_available_for_dates(self, start_date, end_date):
+
+    # NEW: check availability window first
+        if self.available_from and start_date < self.available_from:
+            return False
+
+        if self.available_until and end_date > self.available_until:
+            return False
+
         overlapping_bookings = self.bookings.filter(
             status__in=['pending', 'confirmed'],
             start_date__lte=end_date,
             end_date__gte=start_date,
         )
+
         return not overlapping_bookings.exists()
