@@ -17,8 +17,8 @@ class BikeSerializer(serializers.ModelSerializer):
 
     def get_available(self, bike):
         request = self.context.get('request')
-        start = request.query_params.get('start')
-        end = request.query_params.get('end')
+        start = request.query_params.get('start_date')
+        end = request.query_params.get('end_date')
 
         if not start or not end:
             return None  # frontend has not selected dates yet
