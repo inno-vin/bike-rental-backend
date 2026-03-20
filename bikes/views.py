@@ -27,17 +27,22 @@ class BikeListAPIView(ListAPIView):
         if not start_date or not end_date:
             return Bike.objects.none()
 
-        # ✅ Main query
-        return Bike.objects.filter(
+        # ✅ Get bikes within availability window
+        bikes = Bike.objects.filter(
             available_from__isnull=False,
             available_until__isnull=False,
             available_from__lte=start_date,
             available_until__gte=end_date,
-        ).exclude(
-            bookings__status__in=['pending', 'confirmed'],
-            bookings__start_date__lte=end_date,
-            bookings__end_date__gte=start_date,
-        ).distinct()
+        )
+
+        # ✅ Exclude bikes that have overlapping bookings (SAFE way)
+        bikes = bikes.exclude(
+            Q(bookings__status__in=['pending', 'confirmed']) &
+            Q(bookings__start_date__lte=end_date) &
+            Q(bookings__end_date__gte=start_date)
+        )
+
+        return bikes.distinct()
 
 
 class BikeCreateAPIView(CreateAPIView):
