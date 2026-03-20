@@ -24,7 +24,7 @@ from accounts.permissions import IsOwnerUser
 
 #         return available_bikes
 from django.db.models import Q
-
+from datetime import datetime
 class BikeListAPIView(ListAPIView):
     serializer_class = BikeSerializer
 
@@ -35,17 +35,18 @@ class BikeListAPIView(ListAPIView):
         if not start_date or not end_date:
             return Bike.objects.none()
 
+        # ✅ CONVERT STRING → DATE
+        start_date = datetime.strptime(start_date, "%Y-%m-%d").date()
+        end_date = datetime.strptime(end_date, "%Y-%m-%d").date()
+
         return Bike.objects.filter(
-            # within owner availability window
-            Q(available_from__lte=start_date) | Q(available_from__isnull=True),
-            Q(available_until__gte=end_date) | Q(available_until__isnull=True),
+            available_from__lte=start_date,
+            available_until__gte=end_date,
         ).exclude(
-            # remove overlapping bookings
             bookings__status__in=['pending', 'confirmed'],
             bookings__start_date__lte=end_date,
             bookings__end_date__gte=start_date,
         ).distinct()
-
 class BikeCreateAPIView(CreateAPIView):
     queryset = Bike.objects.all()
     serializer_class = BikeSerializer
